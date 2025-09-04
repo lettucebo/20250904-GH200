@@ -1,19 +1,31 @@
 name: Release
 on: [push, workflow_dispatch]
 
+env: 
+  runner: "ubuntu-latest"
+  config: "Release"
+  # smtpPassword: ${{ secrets.SMTP_PASSWORD }}
+  smtpPassword: "P@ssw0rd"
+
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    env: 
+      runner: "ubuntu-latest"
+      config: "Release"
+    runs-on: $runner
     steps:
       - uses: actions/checkout@v4.2.1
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v5.0.0
+        
         with:
           dotnet-version: 6.0.x
       - name: Install dependencies
-        run: dotnet restore "src/SimpleWeb.sln"
+        env: 
+          config: "Debug"
+        run: dotnet restore "src/SimpleWeb.sln" -c $config
       - name: Publish project
-        run: dotnet publish "src/SimpleWeb/SimpleWeb.csproj" -c Release -o "src/SimpleWeb/bin/Release/net6.0/publish"
+        run: dotnet publish "src/SimpleWeb/SimpleWeb.csproj" -c $config -o "src/SimpleWeb/bin/Release/net6.0/publish"
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
