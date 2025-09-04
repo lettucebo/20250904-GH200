@@ -13,7 +13,7 @@ jobs:
           echo "REF: $GITHUB_REF"
 
       - name: echo secret
-        run: echo "SMTP PASSWORD: ${{ secrets.SMTP_PASSWORD }}"
+        run: echo ${{ secrets.SMTP_PASSWORD }}
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v5.0.0
         with:
