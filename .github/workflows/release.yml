@@ -15,3 +15,17 @@ jobs:
         run: dotnet restore "src/SimpleWeb.sln"
       - name: Publish project
         run: dotnet publish "src/SimpleWeb/SimpleWeb.csproj"
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: simpleweb
+          path: src/SimpleWeb/bin/Release/net6.0/publish
+  deploy:
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: simpleweb
+          path: deploy/simpleweb
