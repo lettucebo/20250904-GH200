@@ -10,9 +10,8 @@ env:
 jobs:
   build:
     env: 
-      runner: "ubuntu-latest"
       config: "Release"
-    runs-on: $runner
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4.2.1
       - name: Setup .NET Core SDK
