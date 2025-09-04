@@ -1,0 +1,23 @@
+trigger:
+- master
+
+name: Deploy Bicep files
+
+variables:
+  resourceGroupName: 'DemoRgName'
+  location: 'eastasia'
+  templateFile: './main.bicep'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'Azure Pass - 20220110'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az --version
+      az group create --name $(resourceGroupName) --location $(location)
+      az deployment group create --resource-group $(resourceGroupName) --template-file $(System.DefaultWorkingDirectory)/bicep/main.bicep --parameters $(System.DefaultWorkingDirectory)/bicep/paramters.json

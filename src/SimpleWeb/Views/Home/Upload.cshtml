@@ -1,0 +1,44 @@
+﻿@using System.IO
+@using System.Net
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Configuration
+@using SimpleWeb.Models
+@inject IConfiguration _configuration
+@inject IWebHostEnvironment _hostEnvironment
+@{
+    ViewData["Title"] = "Home Page";
+    StorageType storageType = _configuration.GetValue<StorageType>("Storage:Type");
+    var localUrl = ViewBag.localUrl;
+    var cloudUrl = ViewBag.cloudUrl;
+}
+
+<div class="card">
+    <div class="card-header">
+        Upload
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Current Image</h5>
+        @if (storageType == StorageType.Azure)
+        {
+            <img src="@Url.Content("~/uploads/images/imageFile.png")" class="rounded mx-auto d-block" alt="" style="max-width: 500px;" />
+        }
+        else
+        {
+            @if (File.Exists(System.IO.Path.Combine(_hostEnvironment.WebRootPath, localUrl.Substring(2))))
+            {
+                <img src="@Url.Content(localUrl)" class="rounded mx-auto d-block" alt="" style="max-width: 500px;" />
+            }
+            else
+            {
+                <img src="@Url.Content("~/uploads/images/imageFile.png")" class="rounded mx-auto d-block" alt="" style="max-width: 500px;" />
+            }
+
+        }
+
+        <h5 class="card-title">Upload Image</h5>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="imgFile" class="form-control-file" value="" />
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  - master
+
+variables:
+  buildConfiguration: "Release"
+
+stages:
+  - stage: Build
+    displayName: "Build stage"
+    jobs:
+      - job: Build
+        displayName: Build and Publish
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: ".NET Restore"
+            inputs:
+              command: "restore"
+              projects: "**/*.csproj"
+              feedsToUse: "select"
+
+          - task: DotNetCoreCLI@2
+            displayName: ".NET Publish"
+            inputs:
+              command: "publish"
+              publishWebProjects: true
+              arguments: "--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)"
+
+          - task: PublishBuildArtifacts@1
+            displayName: "Publish Artifacts"
+            inputs:
+              PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+              ArtifactName: "drop"
+              publishLocation: "Container"
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: Deploy
+        displayName: Deploy to Azure Web App
+        environment: 'production'
+        pool:
+          vmImage: 'ubuntu-latest'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: 'current'
+                    downloadType: 'single'
+                    artifactName: 'drop'
+                    downloadPath: '$(System.ArtifactsDirectory)'
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: 'Azure Pass - 20210830(b9beff15-1273-439b-bd95-d83efb276249)'
+                    appType: 'webApp'
+                    appName: 'demo0830'
+                    package: '$(System.ArtifactsDirectory)/**/*.zip'
+                    deploymentMethod: 'auto'

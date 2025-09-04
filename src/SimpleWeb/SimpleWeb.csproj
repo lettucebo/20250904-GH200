@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <ApplicationInsightsResourceId>/subscriptions/11321b33-1608-46d8-8a51-5d32cdd1b38a/resourceGroups/SimpleWeb/providers/microsoft.insights/components/SimpleWeb</ApplicationInsightsResourceId>
+    <UserSecretsId>567a9a65-c406-4619-b722-3f09dfca0861</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ci.Extensions" Version="6.0.3" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="TwentyTwenty.Storage" Version="2.20.0" />
+    <PackageReference Include="TwentyTwenty.Storage.Azure" Version="2.20.0" />
+    <PackageReference Include="TwentyTwenty.Storage.Local" Version="2.20.0" />
+  </ItemGroup>
+
+</Project>

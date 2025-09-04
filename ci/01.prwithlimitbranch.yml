@@ -1,0 +1,51 @@
+trigger: none
+
+variables:
+- name: 'buildConfig'
+  value: 'Release'
+- name: 'targetBranch'
+  value: 'refs/heads/dev'
+- name: isTargetBranch
+  value: $[eq(variables['System.PullRequest.SourceBranch'], variables['targetBranch'])]
+
+stages:
+- stage: build
+  jobs:
+  - job: build
+
+    pool: 
+      vmImage: 'Ubuntu-20.04'
+
+    steps:
+    - script: |
+        echo $(Build.SourceBranch)
+        echo $(Build.SourceBranchName)
+        echo $(System.PullRequest.SourceBranch)
+      displayName: 'Show variable'
+
+    - script: |
+        echo 'It's not dev branch
+        exit 1
+      condition: and(succeeded(), eq(variables.isTargetBranch, 'false'))
+      displayName: 'Check target branch'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore'
+      inputs:
+        command: 'restore'
+        projects: '**/*.csproj'
+        feedsToUse: 'select'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build'
+      inputs:
+        command: 'build'
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfig)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Test'
+      inputs:
+        command: 'test'
+        projects: '**/*[Tt]est/*.csproj'
+        arguments: '--configuration $(buildConfig)'

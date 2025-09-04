@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: simpleweb 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simpleweb
+  template:
+    metadata:
+      labels:
+        app: simpleweb 
+    spec:
+      containers:
+        - name: simpleweb 
+          image: demo0903.azurecr.io/simpleweb
+          ports:
+          - containerPort: 80

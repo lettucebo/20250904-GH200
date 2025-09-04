@@ -1,0 +1,50 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-20.04'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: '.NET Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    
+- task: DotNetCoreCLI@2
+  displayName: '.NET Build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: '.NET Test'
+  inputs:
+    command: test
+    projects: '**/*[Tt]est/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: '.NET Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --no-restore'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'tf'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/tf'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

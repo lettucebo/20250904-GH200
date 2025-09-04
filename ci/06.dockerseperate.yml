@@ -1,0 +1,27 @@
+trigger:
+- master
+
+variables:
+  imageName: 'demo0119acr.azurecr.io/simpleweb'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Docker@2
+    inputs:
+      repository: '$(imageName)'
+      command: 'build'
+      Dockerfile: '$(System.DefaultWorkingDirectory)/src/SimpleWeb/Dockerfile'
+      tags: |
+        $(Build.BuildId)
+        latest
+
+  - task: Docker@2
+    inputs:
+      containerRegistry: 'demo0119acr'
+      repository: 'simpleweb'
+      command: 'push'
+      tags: |
+        $(Build.BuildId)
+        latest

@@ -1,0 +1,19 @@
+﻿@using System.Net
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration _configuration
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to SimpleWeb v1</h1>
+    <hr />
+    <h3>Current Time (DateTime): @DateTime.Now</h3>
+    <br />
+    <h3>Site config: @(_configuration.GetValue<string>("AppSettings:SiteName"))</h3>
+    <br />
+    <h3>User: @ViewBag.userName</h3>
+    <br />
+    <h3>Host: @(Dns.GetHostName())</h3>
+    <br />
+</div>

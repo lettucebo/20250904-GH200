@@ -1,0 +1,67 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '2.1.x'
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloudConn'
+    organization: 'mttdemo'
+    scannerMode: 'MSBuild'
+    projectKey: 'Demo0830'
+    projectName: 'Demo0830'
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x'
+
+- task: DotNetCoreCLI@2
+  displayName: '.NET Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    
+- task: DotNetCoreCLI@2
+  displayName: '.NET Build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    
+- task: DotNetCoreCLI@2
+  displayName: '.NET Test'
+  inputs:
+    command: test
+    projects: '**/*[Tt]est/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) --no-restore'
+
+- task: WhiteSource Bolt@20
+  inputs:
+    cwd: '$(System.DefaultWorkingDirectory)'
+
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '2.1.x'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
